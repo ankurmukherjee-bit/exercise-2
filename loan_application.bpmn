@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_Loan"
+                  targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="LoanApplicationProcess" isExecutable="false">
+    <bpmn:startEvent id="StartEvent_Loan" name="Submit Loan Application"/>
+    <bpmn:task id="Activity_VerifyDocs" name="Verify Documents and Credit Score"/>
+    <bpmn:exclusiveGateway id="Gateway_Docs" name="Documents Valid?"/>
+    <bpmn:task id="Activity_RejectDocs" name="Reject Application &amp; Notify Customer"/>
+    <bpmn:endEvent id="EndEvent_RejectDocs" name="End (Invalid Docs)"/>
+    <bpmn:task id="Activity_CheckEligibility" name="Check Eligibility (Credit Score &amp; Income)"/>
+    <bpmn:exclusiveGateway id="Gateway_Eligibility" name="Applicant Eligible?"/>
+    <bpmn:task id="Activity_RejectEligibility" name="Send Rejection Notification"/>
+    <bpmn:endEvent id="EndEvent_RejectEligibility" name="End (Not Eligible)"/>
+    <bpmn:task id="Activity_OfficerApproval" name="Loan Officer Review for Final Approval"/>
+    <bpmn:exclusiveGateway id="Gateway_Approval" name="Loan Approved?"/>
+    <bpmn:task id="Activity_Disburse" name="Disburse Loan Amount &amp; Send Approval Notice"/>
+    <bpmn:endEvent id="EndEvent_Approved" name="End (Approved &amp; Disbursed)"/>
+    <bpmn:task id="Activity_OfficerReject" name="Send Rejection Notification"/>
+    <bpmn:endEvent id="EndEvent_OfficerReject" name="End (Rejected by Officer)"/>
+
+    <!-- Sequence Flows -->
+    <bpmn:sequenceFlow id="L_Flow_1" sourceRef="StartEvent_Loan" targetRef="Activity_VerifyDocs"/>
+    <bpmn:sequenceFlow id="L_Flow_2" sourceRef="Activity_VerifyDocs" targetRef="Gateway_Docs"/>
+    <bpmn:sequenceFlow id="L_Flow_3" sourceRef="Gateway_Docs" targetRef="Activity_RejectDocs">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">No</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="L_Flow_4" sourceRef="Activity_RejectDocs" targetRef="EndEvent_RejectDocs"/>
+    <bpmn:sequenceFlow id="L_Flow_5" sourceRef="Gateway_Docs" targetRef="Activity_CheckEligibility">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">Yes</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="L_Flow_6" sourceRef="Activity_CheckEligibility" targetRef="Gateway_Eligibility"/>
+    <bpmn:sequenceFlow id="L_Flow_7" sourceRef="Gateway_Eligibility" targetRef="Activity_RejectEligibility">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">No</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="L_Flow_8" sourceRef="Activity_RejectEligibility" targetRef="EndEvent_RejectEligibility"/>
+    <bpmn:sequenceFlow id="L_Flow_9" sourceRef="Gateway_Eligibility" targetRef="Activity_OfficerApproval">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">Yes</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="L_Flow_10" sourceRef="Activity_OfficerApproval" targetRef="Gateway_Approval"/>
+    <bpmn:sequenceFlow id="L_Flow_11" sourceRef="Gateway_Approval" targetRef="Activity_Disburse">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">Yes</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="L_Flow_12" sourceRef="Activity_Disburse" targetRef="EndEvent_Approved"/>
+    <bpmn:sequenceFlow id="L_Flow_13" sourceRef="Gateway_Approval" targetRef="Activity_OfficerReject">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">No</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="L_Flow_14" sourceRef="Activity_OfficerReject" targetRef="EndEvent_OfficerReject"/>
+  </bpmn:process>
+</bpmn:definitions>

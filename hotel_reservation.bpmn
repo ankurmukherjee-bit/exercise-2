@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_Hotel"
+                  targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="HotelReservationProcess" isExecutable="false">
+    <bpmn:startEvent id="StartEvent_1" name="Submit Booking Request"/>
+    <bpmn:task id="Activity_CheckAvailability" name="Check Room Availability"/>
+    <bpmn:exclusiveGateway id="Gateway_Availability" name="Rooms Available?"/>
+    <bpmn:task id="Activity_NotifyNoRooms" name="Notify Guest: No Rooms Available"/>
+    <bpmn:endEvent id="EndEvent_NoRooms" name="End (No Rooms)"/>
+    <bpmn:task id="Activity_RequestPayment" name="Request Payment (Deposit)"/>
+    <bpmn:exclusiveGateway id="Gateway_Payment" name="Payment Successful?"/>
+    <bpmn:task id="Activity_NotifyPaymentFail" name="Notify Guest: Payment Failed"/>
+    <bpmn:endEvent id="EndEvent_PaymentFail" name="End (Payment Failed)"/>
+    <bpmn:task id="Activity_ConfirmBooking" name="Confirm Booking &amp; Generate Ref Number"/>
+    <bpmn:task id="Activity_SendEmail" name="Send Booking Confirmation Email"/>
+    <bpmn:endEvent id="EndEvent_Success" name="End (Booking Successful)"/>
+
+    <!-- Sequence Flows -->
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="Activity_CheckAvailability"/>
+    <bpmn:sequenceFlow id="Flow_2" sourceRef="Activity_CheckAvailability" targetRef="Gateway_Availability"/>
+    <bpmn:sequenceFlow id="Flow_3" sourceRef="Gateway_Availability" targetRef="Activity_NotifyNoRooms">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">No</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_4" sourceRef="Activity_NotifyNoRooms" targetRef="EndEvent_NoRooms"/>
+    <bpmn:sequenceFlow id="Flow_5" sourceRef="Gateway_Availability" targetRef="Activity_RequestPayment">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">Yes</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_6" sourceRef="Activity_RequestPayment" targetRef="Gateway_Payment"/>
+    <bpmn:sequenceFlow id="Flow_7" sourceRef="Gateway_Payment" targetRef="Activity_NotifyPaymentFail">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">No</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_8" sourceRef="Activity_NotifyPaymentFail" targetRef="EndEvent_PaymentFail"/>
+    <bpmn:sequenceFlow id="Flow_9" sourceRef="Gateway_Payment" targetRef="Activity_ConfirmBooking">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">Yes</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_10" sourceRef="Activity_ConfirmBooking" targetRef="Activity_SendEmail"/>
+    <bpmn:sequenceFlow id="Flow_11" sourceRef="Activity_SendEmail" targetRef="EndEvent_Success"/>
+  </bpmn:process>
+</bpmn:definitions>

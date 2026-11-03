@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_Recruitment"
+                  targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="RecruitmentProcess" isExecutable="false">
+    <bpmn:startEvent id="StartEvent_Job" name="Submit Job Application Online"/>
+    <bpmn:task id="Activity_Screen" name="Screen Application against Criteria"/>
+    <bpmn:exclusiveGateway id="Gateway_Screen" name="Meets Criteria?"/>
+    <bpmn:task id="Activity_RejectScreen" name="Send Rejection Notification"/>
+    <bpmn:endEvent id="EndEvent_RejectScreen" name="End (Criteria Not Met)"/>
+    <bpmn:task id="Activity_ScheduleTech" name="Schedule Technical Interview"/>
+    <bpmn:task id="Activity_EvalTech" name="Evaluate Technical Interview Performance"/>
+    <bpmn:exclusiveGateway id="Gateway_Tech" name="Passed Technical?"/>
+    <bpmn:task id="Activity_RejectTech" name="Send Rejection Notification"/>
+    <bpmn:endEvent id="EndEvent_RejectTech" name="End (Failed Technical)"/>
+    <bpmn:task id="Activity_ScheduleHR" name="Schedule HR/Managerial Round"/>
+    <bpmn:task id="Activity_EvalHR" name="Evaluate HR Round"/>
+    <bpmn:exclusiveGateway id="Gateway_HR" name="Candidate Selected?"/>
+    <bpmn:task id="Activity_RejectHR" name="Send Rejection Notification"/>
+    <bpmn:endEvent id="EndEvent_RejectHR" name="End (Rejected in HR)"/>
+    <bpmn:task id="Activity_SendOffer" name="Generate &amp; Send Offer Letter"/>
+    <bpmn:endEvent id="EndEvent_OfferSent" name="End (Offer Sent)"/>
+
+    <!-- Sequence Flows -->
+    <bpmn:sequenceFlow id="J_Flow_1" sourceRef="StartEvent_Job" targetRef="Activity_Screen"/>
+    <bpmn:sequenceFlow id="J_Flow_2" sourceRef="Activity_Screen" targetRef="Gateway_Screen"/>
+    <bpmn:sequenceFlow id="J_Flow_3" sourceRef="Gateway_Screen" targetRef="Activity_RejectScreen">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">No</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="J_Flow_4" sourceRef="Activity_RejectScreen" targetRef="EndEvent_RejectScreen"/>
+    <bpmn:sequenceFlow id="J_Flow_5" sourceRef="Gateway_Screen" targetRef="Activity_ScheduleTech">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">Yes</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="J_Flow_6" sourceRef="Activity_ScheduleTech" targetRef="Activity_EvalTech"/>
+    <bpmn:sequenceFlow id="J_Flow_7" sourceRef="Activity_EvalTech" targetRef="Gateway_Tech"/>
+    <bpmn:sequenceFlow id="J_Flow_8" sourceRef="Gateway_Tech" targetRef="Activity_RejectTech">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">No</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="J_Flow_9" sourceRef="Activity_RejectTech" targetRef="EndEvent_RejectTech"/>
+    <bpmn:sequenceFlow id="J_Flow_10" sourceRef="Gateway_Tech" targetRef="Activity_ScheduleHR">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">Yes</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="J_Flow_11" sourceRef="Activity_ScheduleHR" targetRef="Activity_EvalHR"/>
+    <bpmn:sequenceFlow id="J_Flow_12" sourceRef="Activity_EvalHR" targetRef="Gateway_HR"/>
+    <bpmn:sequenceFlow id="J_Flow_13" sourceRef="Gateway_HR" targetRef="Activity_RejectHR">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">No</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="J_Flow_14" sourceRef="Activity_RejectHR" targetRef="EndEvent_RejectHR"/>
+    <bpmn:sequenceFlow id="J_Flow_15" sourceRef="Gateway_HR" targetRef="Activity_SendOffer">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">Yes</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="J_Flow_16" sourceRef="Activity_SendOffer" targetRef="EndEvent_OfferSent"/>
+  </bpmn:process>
+</bpmn:definitions>
